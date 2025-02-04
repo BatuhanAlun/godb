@@ -9,5 +9,12 @@ type Database struct {
 type Table struct {
 	Name   string
 	DBPath string
-	Rows   []any
+	Rows   []*Row
+}
+
+type Row struct {
+	Name string
+	Mode string
+	Type string
+	Data []any
 }
