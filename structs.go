@@ -2,7 +2,7 @@ package godb
 
 type Database struct {
 	Name   string
-	Tables []Table
+	Tables []*Table
 	Path   string
 }
 
