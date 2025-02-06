@@ -26,8 +26,12 @@ func CreateColumn(cName, cType string, cMode ...string) Column {
 	return Column{Name: cName, Type: cType, Mode: mode}
 }
 
-func (t *Table) AddRow(row *Row) {
+func (t *Table) AddRow(row *Row) error {
+	if err := row.ValidateData(t.Columns); err != nil {
+		return err
+	}
 	t.Rows = append(t.Rows, row)
+	return nil
 }
 
 func (t *Table) AddColumn(col Column) {
