@@ -36,4 +36,5 @@ func (t *Table) AddColumn(col Column) {
 			log.Fatal(errors.New("Column Names Needs to Be Unique"))
 		}
 	}
+	t.Columns = append(t.Columns, col)
 }
