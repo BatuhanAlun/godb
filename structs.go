@@ -7,14 +7,18 @@ type Database struct {
 }
 
 type Table struct {
-	Name   string
-	DBPath string
-	Rows   []*Row
+	Name    string
+	DBPath  string
+	Rows    []*Row
+	Columns []Column
 }
 
 type Row struct {
+	Data map[string]interface{}
+}
+
+type Column struct {
 	Name string
-	Mode string
 	Type string
-	Data []any
+	Mode string
 }
