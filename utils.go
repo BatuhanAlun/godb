@@ -2,6 +2,7 @@ package godb
 
 import (
 	"fmt"
+	"os"
 )
 
 func (row *Row) ValidateData(columns []Column) error {
@@ -25,6 +26,24 @@ func (row *Row) ValidateData(columns []Column) error {
 				return fmt.Errorf("Column %s expects an bool, but got %T", col.Name, value)
 			}
 		}
+	}
+	return nil
+}
+
+func CreateFiles(db Database) error {
+
+	dbFolderPath := db.Path + db.Name
+	err := os.Mkdir(dbFolderPath, 0755)
+	if err != nil {
+		return fmt.Errorf("DB folder cannot be created")
+	}
+
+	for _, v := range db.Tables {
+		file, err := os.Create(dbFolderPath + "/" + v.Name + ".json")
+		if err != nil {
+			return fmt.Errorf("error on Creating Table json file ")
+		}
+		defer file.Close()
 	}
 	return nil
 }
