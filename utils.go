@@ -1,6 +1,8 @@
 package godb
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func (row *Row) ValidateData(columns []Column) error {
 	for _, col := range columns {
@@ -9,7 +11,6 @@ func (row *Row) ValidateData(columns []Column) error {
 			return fmt.Errorf("missing value for column: %s", col.Name)
 		}
 
-		// Type validation logic here
 		switch col.Type {
 		case "int":
 			if _, ok := value.(int); !ok {

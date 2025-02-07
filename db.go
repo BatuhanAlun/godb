@@ -5,7 +5,7 @@ func CreateDB(dbName, path string) Database {
 }
 
 func (d *Database) AddTable(tableName *Table) {
-
+	tableName.DBPath = d.Path
 	d.Tables = append(d.Tables, tableName)
 
 }
