@@ -30,15 +30,15 @@ func (row *Row) ValidateData(columns []Column) error {
 	return nil
 }
 
-func CreateFiles(db Database) error {
+func (d *Database) CreateFiles() error {
 
-	dbFolderPath := db.Path + db.Name
+	dbFolderPath := d.Path + d.Name
 	err := os.Mkdir(dbFolderPath, 0755)
 	if err != nil {
 		return fmt.Errorf("DB folder cannot be created")
 	}
 
-	for _, v := range db.Tables {
+	for _, v := range d.Tables {
 		file, err := os.Create(dbFolderPath + "/" + v.Name + ".json")
 		if err != nil {
 			return fmt.Errorf("error on Creating Table json file ")
@@ -46,4 +46,8 @@ func CreateFiles(db Database) error {
 		defer file.Close()
 	}
 	return nil
+}
+
+func (d *Database) SaveDatabaseToFile() {
+
 }
