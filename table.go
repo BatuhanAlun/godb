@@ -3,6 +3,8 @@ package godb
 import (
 	"errors"
 	"log"
+	"reflect"
+	"slices"
 )
 
 func CreateTable(tableName string) *Table {
@@ -41,4 +43,12 @@ func (t *Table) AddColumn(col Column) {
 		}
 	}
 	t.Columns = append(t.Columns, col)
+}
+
+func (t *Table) DeleteRow(row Row) {
+	for index, v := range t.Rows {
+		if reflect.DeepEqual(v.Data, row.Data) {
+			t.Rows = slices.Delete(t.Rows, index, index+1)
+		}
+	}
 }
