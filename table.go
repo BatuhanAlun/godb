@@ -52,3 +52,11 @@ func (t *Table) DeleteRow(row Row) {
 		}
 	}
 }
+
+func (t *Table) Get() []map[string]interface{} {
+	var tempMap []map[string]interface{}
+	for _, v := range t.Rows {
+		tempMap = append(tempMap, v.Data)
+	}
+	return tempMap
+}
