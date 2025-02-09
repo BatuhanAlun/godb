@@ -60,3 +60,9 @@ func (t *Table) Get() []map[string]interface{} {
 	}
 	return tempMap
 }
+
+func (r *Row) UpdateRow(newRow Row) {
+	for key, value := range newRow.Data {
+		r.Data[key] = value
+	}
+}
