@@ -3,6 +3,7 @@ package godb
 import (
 	"errors"
 	"log"
+	"os/exec"
 	"reflect"
 	"slices"
 )
@@ -37,6 +38,18 @@ func CreateColumn(cName, cType string, cMode ...string) Column {
 func (t *Table) AddRow(row *Row) error {
 	if err := row.ValidateData(t.Columns); err != nil {
 		return err
+	}
+	for _, v := range t.Columns {
+		if v.Mode == "UUID" {
+			newUUID, err := exec.Command("uuidgen").Output()
+			if err != nil {
+				log.Fatal(err)
+			}
+			mapval := v.Name
+			row.Data[mapval] = newUUID
+			t.Rows = append(t.Rows, row)
+			return nil
+		}
 	}
 	t.Rows = append(t.Rows, row)
 	return nil
