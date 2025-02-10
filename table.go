@@ -17,8 +17,14 @@ func CreateRow(data map[string]interface{}) Row {
 
 func CreateColumn(cName, cType string, cMode ...string) Column {
 	mode := ""
-	if len(cMode) > 0 && cMode[0] == "PK" {
-		mode = "PK"
+	if len(cMode) > 0 && cMode[0] == "PK,INT" {
+		mode = "INT"
+	} else if len(cMode) > 0 && cMode[0] == "PK,UUID" {
+		mode = "UUID"
+	} else if len(cMode) > 0 {
+		log.Fatal(errors.New("wrong mode input"))
+	} else {
+		mode = ""
 	}
 
 	if cType != "int" && cType != "bool" && cType != "string" {
