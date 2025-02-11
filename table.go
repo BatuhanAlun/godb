@@ -22,6 +22,7 @@ func CreateColumn(cName, cType string, cMode ...string) Column {
 		mode = "INT"
 	} else if len(cMode) > 0 && cMode[0] == "PK,UUID" {
 		mode = "UUID"
+
 	} else if len(cMode) > 0 {
 		log.Fatal(errors.New("wrong mode input"))
 	} else {
@@ -31,7 +32,9 @@ func CreateColumn(cName, cType string, cMode ...string) Column {
 	if cType != "int" && cType != "bool" && cType != "string" {
 		log.Fatal(errors.New("type needs to be int, bool or string"))
 	}
-
+	if mode == "UUID" {
+		cType = "[]uint8"
+	}
 	return Column{Name: cName, Type: cType, Mode: mode}
 }
 

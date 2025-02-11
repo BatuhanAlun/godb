@@ -16,11 +16,11 @@ func (row *Row) ValidateData(columns []Column) error {
 		switch col.Type {
 		case "int":
 			if _, ok := value.(int); !ok {
-				if _, ok := value.([]uint8); ok && col.Mode == "PK,UUID" {
-					return nil
-				} else {
-					return fmt.Errorf("Column %s expects an int, but got %T", col.Name, value)
-				}
+				return fmt.Errorf("Column %s expects an int, but got %T", col.Name, value)
+			}
+		case "[]uint8":
+			if _, ok := value.([]uint8); !ok {
+				return fmt.Errorf("Column %s expects an []uint8, but got %T", col.Name, value)
 			}
 		case "string":
 			if _, ok := value.(string); !ok {
