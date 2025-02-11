@@ -16,6 +16,9 @@ func (row *Row) ValidateData(columns []Column) error {
 		switch col.Type {
 		case "int":
 			if _, ok := value.(int); !ok {
+				if col.Mode != "PK,UUID" && col.Mode != "PK,INT" {
+					return fmt.Errorf("PK Column %s expects an int, but got %T", col.Name, value)
+				}
 				return fmt.Errorf("Column %s expects an int, but got %T", col.Name, value)
 			}
 		case "string":
