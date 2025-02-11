@@ -15,7 +15,9 @@ func (row *Row) ValidateData(columns []Column) error {
 
 		switch col.Type {
 		case "int":
-			if _, ok := value.(int); !ok {
+			_, ok := value.(int)
+			_, bok := value.([]uint8)
+			if !ok && !bok {
 				return fmt.Errorf("Column %s expects an int, but got %T", col.Name, value)
 			}
 		case "[]uint8":
