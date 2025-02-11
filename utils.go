@@ -79,6 +79,5 @@ func (db *Database) SaveDatabaseToFile() error {
 			return fmt.Errorf("failed to write table '%s' to file: %v", table.Name, err)
 		}
 	}
-
 	return nil
 }
