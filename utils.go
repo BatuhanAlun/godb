@@ -1,14 +1,13 @@
 package godb
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 )
 
-func (row *Row) ValidateData(columns []Column) error {
+func ValidateData(columns []Column, row map[string]interface{}) error {
 	for _, col := range columns {
-		value, exists := row.Data[col.Name]
+		value, exists := row[col.Name]
 		if !exists {
 			return fmt.Errorf("missing value for column: %s", col.Name)
 		}
@@ -19,10 +18,6 @@ func (row *Row) ValidateData(columns []Column) error {
 			_, bok := value.([]uint8)
 			if !ok && !bok {
 				return fmt.Errorf("Column %s expects an int, but got %T", col.Name, value)
-			}
-		case "[]uint8":
-			if _, ok := value.([]uint8); !ok {
-				return fmt.Errorf("Column %s expects an []uint8, but got %T", col.Name, value)
 			}
 		case "string":
 			if _, ok := value.(string); !ok {
@@ -55,29 +50,29 @@ func (d *Database) CreateFiles() error {
 	return nil
 }
 
-func (db *Database) SaveDatabaseToFile() error {
-	if err := os.MkdirAll(db.Name, os.ModePerm); err != nil {
-		return fmt.Errorf("failed to create database folder: %v", err)
-	}
+// func (db *Database) SaveDatabaseToFile() error {
+// 	if err := os.MkdirAll(db.Name, os.ModePerm); err != nil {
+// 		return fmt.Errorf("failed to create database folder: %v", err)
+// 	}
 
-	for _, table := range db.Tables {
-		for _, row := range table.Rows {
-			if err := row.ValidateData(table.Columns); err != nil {
-				return fmt.Errorf("validation failed in table '%s': %v", table.Name, err)
-			}
-		}
+// 	for _, table := range db.Tables {
+// 		for _, row := range table.Rows {
+// 			if err := row.ValidateData(table.Columns); err != nil {
+// 				return fmt.Errorf("validation failed in table '%s': %v", table.Name, err)
+// 			}
+// 		}
 
-		tableData, err := json.MarshalIndent(table.Rows, "", "  ")
-		if err != nil {
-			return fmt.Errorf("failed to encode table '%s' to JSON: %v", table.Name, err)
-		}
+// 		tableData, err := json.MarshalIndent(table.Rows, "", "  ")
+// 		if err != nil {
+// 			return fmt.Errorf("failed to encode table '%s' to JSON: %v", table.Name, err)
+// 		}
 
-		filePath := db.Path + db.Name + "/" + table.Name + ".json"
+// 		filePath := db.Path + db.Name + "/" + table.Name + ".json"
 
-		err = os.WriteFile(filePath, tableData, 0644)
-		if err != nil {
-			return fmt.Errorf("failed to write table '%s' to file: %v", table.Name, err)
-		}
-	}
-	return nil
-}
+// 		err = os.WriteFile(filePath, tableData, 0644)
+// 		if err != nil {
+// 			return fmt.Errorf("failed to write table '%s' to file: %v", table.Name, err)
+// 		}
+// 	}
+// 	return nil
+// }

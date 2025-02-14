@@ -2,8 +2,8 @@ package godb
 
 import (
 	"errors"
+	"fmt"
 	"log"
-	"os/exec"
 	"reflect"
 	"slices"
 )
@@ -18,43 +18,35 @@ func CreateRow(data map[string]interface{}) Row {
 
 func CreateColumn(cName, cType string, cMode ...string) Column {
 	mode := ""
-	if len(cMode) > 0 && cMode[0] == "PK,INT" {
-		mode = "INT"
-	} else if len(cMode) > 0 && cMode[0] == "PK,UUID" {
-		mode = "UUID"
-
-	} else if len(cMode) > 0 {
-		log.Fatal(errors.New("wrong mode input"))
+	if len(cMode) > 0 && cMode[0] == "PK" {
+		mode = "PK"
 	} else {
 		mode = ""
 	}
-
-	if cType != "int" && cType != "bool" && cType != "string" {
-		log.Fatal(errors.New("type needs to be int, bool or string"))
-	}
-	if mode == "UUID" {
-		cType = "[]uint8"
+	if cType != "int" && cType != "bool" && cType != "string" && cType != "UUID" {
+		log.Fatal(errors.New("type needs to be int, bool, string or UUID "))
 	}
 	return Column{Name: cName, Type: cType, Mode: mode}
 }
 
-func (t *Table) AddRow(row *Row) error {
-	if err := row.ValidateData(t.Columns); err != nil {
+func (t *Table) AddData(mapKey []string, mapVal []interface{}) error {
+	if len(mapKey) != len(mapVal) {
+		return fmt.Errorf("number of keys and values do not match")
+	}
+
+	tempMap := make(map[string]interface{})
+
+	for i, key := range mapKey {
+		tempMap[key] = mapVal[i]
+	}
+
+	if err := ValidateData(t.Columns, tempMap); err != nil {
 		return err
 	}
-	for _, v := range t.Columns {
-		if v.Mode == "UUID" {
-			newUUID, err := exec.Command("uuidgen").Output()
-			if err != nil {
-				log.Fatal(err)
-			}
-			mapval := v.Name
-			row.Data[mapval] = newUUID
-			t.Rows = append(t.Rows, row)
-			return nil
-		}
-	}
-	t.Rows = append(t.Rows, row)
+
+	tempRow := &Row{Data: tempMap}
+	t.Rows = append(t.Rows, tempRow)
+
 	return nil
 }
 
