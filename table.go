@@ -4,8 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"reflect"
-	"slices"
 )
 
 func CreateTable(tableName string) *Table {
@@ -59,12 +57,50 @@ func (t *Table) AddColumn(col Column) {
 	t.Columns = append(t.Columns, col)
 }
 
-func (t *Table) DeleteRow(row Row) {
-	for index, v := range t.Rows {
-		if reflect.DeepEqual(v.Data, row.Data) {
-			t.Rows = slices.Delete(t.Rows, index, index+1)
+func (t *Table) Update(findCol string, findVal interface{}, updateCol string, updateVal interface{}) error {
+	rowIndex := -1
+
+	// Check if the findCol exists
+	colExists := false
+	for _, col := range t.Columns {
+		if col.Name == findCol {
+			colExists = true
+			break
 		}
 	}
+	if !colExists {
+		return fmt.Errorf("column %s does not exist", findCol)
+	}
+
+	// Search for the row with matching findVal
+	for index, row := range t.Rows {
+		if dataVal, exists := row.Data[findCol]; exists {
+			if fmt.Sprintf("%v", dataVal) == fmt.Sprintf("%v", findVal) {
+				rowIndex = index
+				break
+			}
+		}
+	}
+
+	if rowIndex == -1 {
+		return fmt.Errorf("no matching row found for %s = %v", findCol, findVal)
+	}
+
+	// Check if the updateCol exists
+	colExists = false
+	for _, col := range t.Columns {
+		if col.Name == updateCol {
+			colExists = true
+			break
+		}
+	}
+	if !colExists {
+		return fmt.Errorf("update column %s does not exist", updateCol)
+	}
+
+	// Update the found row
+	t.Rows[rowIndex].Data[updateCol] = updateVal
+	return nil
 }
 
 func (t *Table) Get() []map[string]interface{} {
