@@ -29,24 +29,57 @@ func CreateColumn(cName, cType string, cMode ...string) Column {
 	return Column{Name: cName, Type: cType, Mode: mode}
 }
 
-func (t *Table) AddData(mapKey []string, mapVal []interface{}) error {
-	if len(mapKey) != len(mapVal) {
-		return fmt.Errorf("number of keys and values do not match")
+func (t *Table) Update(findCol string, findVal interface{}, updateCol string, updateVal interface{}) error {
+	rowIndex := -1
+
+	colExists := false
+	for _, col := range t.Columns {
+		if col.Name == findCol {
+			colExists = true
+			break
+		}
+	}
+	if !colExists {
+		return fmt.Errorf("column %s does not exist", findCol)
 	}
 
-	tempMap := make(map[string]interface{})
-
-	for i, key := range mapKey {
-		tempMap[key] = mapVal[i]
+	for index, row := range t.Rows {
+		if dataVal, exists := row.Data[findCol]; exists {
+			if reflect.TypeOf(dataVal) != reflect.TypeOf(findVal) {
+				return fmt.Errorf("type mismatch: expected %T but got %T for %s", dataVal, findVal, findCol)
+			}
+			if dataVal == findVal {
+				rowIndex = index
+				break
+			}
+		}
 	}
 
-	if err := ValidateData(t.Columns, tempMap); err != nil {
-		return err
+	if rowIndex == -1 {
+		return fmt.Errorf("no matching row found for %s = %v", findCol, findVal)
 	}
 
-	tempRow := &Row{Data: tempMap}
-	t.Rows = append(t.Rows, tempRow)
+	colExists = false
+	for _, col := range t.Columns {
+		if col.Name == updateCol {
+			colExists = true
+			break
+		}
+	}
+	if !colExists {
+		return fmt.Errorf("update column %s does not exist", updateCol)
+	}
 
+	existingVal, exists := t.Rows[rowIndex].Data[updateCol]
+	if !exists {
+		return fmt.Errorf("column %s does not exist in the row", updateCol)
+	}
+
+	if reflect.TypeOf(existingVal) != reflect.TypeOf(updateVal) {
+		return fmt.Errorf("type mismatch: expected %T but got %T for %s", existingVal, updateVal, updateCol)
+	}
+
+	t.Rows[rowIndex].Data[updateCol] = updateVal
 	return nil
 }
 
