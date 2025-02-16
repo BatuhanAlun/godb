@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"reflect"
+	"slices"
 )
 
 func CreateTable(tableName string) *Table {
@@ -118,4 +119,23 @@ func (t *Table) Get() []map[string]interface{} {
 		tempMap = append(tempMap, v.Data)
 	}
 	return tempMap
+}
+
+func (t *Table) Delete(findCol string, findVal interface{}) error {
+	colIndex := -1
+	for index, v := range t.Columns {
+		if v.Name == findCol {
+			colIndex = index
+		}
+	}
+	if colIndex == -1 {
+		return fmt.Errorf("wrong column name")
+	}
+
+	for rowIndex, v := range t.Rows {
+		if v.Data[findCol] == findVal {
+			t.Rows = slices.Delete(t.Rows, rowIndex, rowIndex+1)
+		}
+	}
+	return nil
 }
