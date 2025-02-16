@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"reflect"
-	"slices"
 )
 
 func CreateTable(tableName string) *Table {
@@ -132,10 +131,13 @@ func (t *Table) Delete(findCol string, findVal interface{}) error {
 		return fmt.Errorf("wrong column name")
 	}
 
-	for rowIndex, v := range t.Rows {
-		if v.Data[findCol] == findVal {
-			t.Rows = slices.Delete(t.Rows, rowIndex, rowIndex+1)
+	newRows := t.Rows[:0]
+	for _, row := range t.Rows {
+		if row.Data[findCol] != findVal {
+			newRows = append(newRows, row)
 		}
 	}
+
+	t.Rows = newRows
 	return nil
 }
