@@ -1,6 +1,7 @@
 package godb
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 )
@@ -50,29 +51,29 @@ func (d *Database) CreateFiles() error {
 	return nil
 }
 
-// func (db *Database) SaveDatabaseToFile() error {
-// 	if err := os.MkdirAll(db.Name, os.ModePerm); err != nil {
-// 		return fmt.Errorf("failed to create database folder: %v", err)
-// 	}
+func (db *Database) SaveDatabaseToFile() error {
+	if err := os.MkdirAll(db.Name, os.ModePerm); err != nil {
+		return fmt.Errorf("failed to create database folder: %v", err)
+	}
 
-// 	for _, table := range db.Tables {
-// 		for _, row := range table.Rows {
-// 			if err := row.ValidateData(table.Columns); err != nil {
-// 				return fmt.Errorf("validation failed in table '%s': %v", table.Name, err)
-// 			}
-// 		}
+	for _, table := range db.Tables {
+		for _, row := range table.Rows {
+			if err := ValidateData(table.Columns, row.Data); err != nil {
+				return fmt.Errorf("validation failed in table '%s': %v", table.Name, err)
+			}
+		}
 
-// 		tableData, err := json.MarshalIndent(table.Rows, "", "  ")
-// 		if err != nil {
-// 			return fmt.Errorf("failed to encode table '%s' to JSON: %v", table.Name, err)
-// 		}
+		tableData, err := json.MarshalIndent(table.Rows, "", "  ")
+		if err != nil {
+			return fmt.Errorf("failed to encode table '%s' to JSON: %v", table.Name, err)
+		}
 
-// 		filePath := db.Path + db.Name + "/" + table.Name + ".json"
+		filePath := db.Path + db.Name + "/" + table.Name + ".json"
 
-// 		err = os.WriteFile(filePath, tableData, 0644)
-// 		if err != nil {
-// 			return fmt.Errorf("failed to write table '%s' to file: %v", table.Name, err)
-// 		}
-// 	}
-// 	return nil
-// }
+		err = os.WriteFile(filePath, tableData, 0644)
+		if err != nil {
+			return fmt.Errorf("failed to write table '%s' to file: %v", table.Name, err)
+		}
+	}
+	return nil
+}
