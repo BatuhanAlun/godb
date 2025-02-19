@@ -141,3 +141,12 @@ func (t *Table) Delete(findCol string, findVal interface{}) error {
 	t.Rows = newRows
 	return nil
 }
+
+func (t *Table) PullData() []map[string]interface{} {
+	var tempDataSlice []map[string]interface{}
+
+	for _, v := range t.Rows {
+		tempDataSlice = append(tempDataSlice, v.Data)
+	}
+	return tempDataSlice
+}
