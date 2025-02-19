@@ -1,10 +1,14 @@
 package godb
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 	"reflect"
+	"strings"
 )
 
 func CreateTable(tableName string) *Table {
@@ -142,11 +146,47 @@ func (t *Table) Delete(findCol string, findVal interface{}) error {
 	return nil
 }
 
-func (t *Table) PullData() []map[string]interface{} {
-	var tempDataSlice []map[string]interface{}
+func LoadDatabaseFromFile(dbName string) (*Database, error) {
+	dbPath := dbName + "/"
 
-	for _, v := range t.Rows {
-		tempDataSlice = append(tempDataSlice, v.Data)
+	files, err := os.ReadDir(dbPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read database directory: %v", err)
 	}
-	return tempDataSlice
+
+	db := &Database{
+		Name:   dbName,
+		Path:   dbPath,
+		Tables: []*Table{},
+	}
+
+	for _, file := range files {
+		if !strings.HasSuffix(file.Name(), ".json") {
+			continue
+		}
+
+		tableName := strings.TrimSuffix(file.Name(), ".json")
+		filePath := filepath.Join(dbPath, file.Name())
+
+		data, err := os.ReadFile(filePath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read table file '%s': %v", filePath, err)
+		}
+
+		var rows []*Row
+		if err := json.Unmarshal(data, &rows); err != nil {
+			return nil, fmt.Errorf("failed to decode JSON for table '%s': %v", tableName, err)
+		}
+
+		table := &Table{
+			Name:    tableName,
+			DBPath:  dbPath,
+			Rows:    rows,
+			Columns: []Column{},
+		}
+
+		db.Tables = append(db.Tables, table)
+	}
+
+	return db, nil
 }
