@@ -156,6 +156,7 @@ func LoadDatabaseFromFile(dbName string) (*Database, error) {
 	}
 
 	// Initialize the database
+	dbPath = "./"
 	db := &Database{
 		Name:   dbName,
 		Path:   dbPath,
