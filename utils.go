@@ -53,7 +53,6 @@ func (d *Database) CreateFiles() error {
 }
 
 func (db *Database) SaveDatabaseToFile() error {
-	fmt.Println("geldim")
 	if err := os.MkdirAll(db.Name, os.ModePerm); err != nil {
 		return fmt.Errorf("failed to create database folder: %v", err)
 	}

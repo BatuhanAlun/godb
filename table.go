@@ -147,7 +147,7 @@ func (t *Table) Delete(findCol string, findVal interface{}) error {
 }
 
 func LoadDatabaseFromFile(dbName string) (*Database, error) {
-	dbPath := dbName + "/"
+	dbPath := "./"
 
 	// Read the directory
 	files, err := os.ReadDir(dbPath)
@@ -170,7 +170,7 @@ func LoadDatabaseFromFile(dbName string) (*Database, error) {
 
 		// Table name is the file name without the .json extension
 		tableName := strings.TrimSuffix(file.Name(), ".json")
-		filePath := filepath.Join(dbPath, file.Name())
+		filePath := filepath.Join(dbPath, dbName, file.Name())
 
 		// Read the table data
 		data, err := os.ReadFile(filePath)
