@@ -53,45 +53,28 @@ func (d *Database) CreateFiles() error {
 }
 
 func (db *Database) SaveDatabaseToFile() error {
-	fmt.Println("Saving database...")
-
-	// Ensure db.Path is not empty and directory exists
-	if db.Path == "" {
-		return fmt.Errorf("db.Path is not set")
-	}
-
-	if err := os.MkdirAll(db.Path, os.ModePerm); err != nil {
+	fmt.Println("geldim")
+	if err := os.MkdirAll(db.Name, os.ModePerm); err != nil {
 		return fmt.Errorf("failed to create database folder: %v", err)
 	}
 
-	if len(db.Tables) == 0 {
-		return fmt.Errorf("no tables found in the database")
-	}
-
 	for _, table := range db.Tables {
-		if len(table.Rows) == 0 {
-			continue // Skip empty tables or handle as needed
-		}
-
-		// Validate rows in the table
 		for _, row := range table.Rows {
 			if err := ValidateData(table.Columns, row.Data); err != nil {
 				return fmt.Errorf("validation failed in table '%s': %v", table.Name, err)
 			}
 		}
 
-		// Marshal table rows to JSON
 		tableData, err := json.MarshalIndent(table.Rows, "", "  ")
 		if err != nil {
 			return fmt.Errorf("failed to encode table '%s' to JSON: %v", table.Name, err)
 		}
-
-		// Construct the correct file path
 		tablename := table.Name + ".json"
-		filePath := filepath.Join(db.Path, db.Name, tablename)
-		fmt.Println("Saving to path:", filePath)
 
-		// Write table data to the file
+		filePath := filepath.Join(db.Path, db.Name, tablename)
+		fmt.Println(db.Path, db.Name, filePath)
+		// filePath := db.Path + db.Name + "/" + table.Name + ".json"
+
 		err = os.WriteFile(filePath, tableData, 0644)
 		if err != nil {
 			return fmt.Errorf("failed to write table '%s' to file: %v", table.Name, err)
