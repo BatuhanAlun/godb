@@ -147,7 +147,7 @@ func (t *Table) Delete(findCol string, findVal interface{}) error {
 }
 
 func LoadDatabaseFromFile(dbName string) (*Database, error) {
-	dbPath := "./"
+	dbPath := "/"
 
 	// Read the directory
 	files, err := os.ReadDir(dbPath)
