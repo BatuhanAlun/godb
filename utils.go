@@ -88,7 +88,7 @@ func (db *Database) SaveDatabaseToFile() error {
 
 		// Construct the correct file path
 		tablename := table.Name + ".json"
-		filePath := filepath.Join(db.Path, tablename)
+		filePath := filepath.Join(db.Path, db.Name, tablename)
 		fmt.Println("Saving to path:", filePath)
 
 		// Write table data to the file
