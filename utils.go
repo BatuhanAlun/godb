@@ -69,7 +69,9 @@ func (db *Database) SaveDatabaseToFile() error {
 			return fmt.Errorf("failed to encode table '%s' to JSON: %v", table.Name, err)
 		}
 		tablename := table.Name + ".json"
+
 		filePath := filepath.Join(db.Path, db.Name, tablename)
+		fmt.Println(db.Path, db.Name, filePath)
 		// filePath := db.Path + db.Name + "/" + table.Name + ".json"
 
 		err = os.WriteFile(filePath, tableData, 0644)
