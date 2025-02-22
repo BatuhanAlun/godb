@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 )
 
 func ValidateData(columns []Column, row map[string]interface{}) error {
@@ -67,8 +68,9 @@ func (db *Database) SaveDatabaseToFile() error {
 		if err != nil {
 			return fmt.Errorf("failed to encode table '%s' to JSON: %v", table.Name, err)
 		}
-
-		filePath := db.Path + db.Name + "/" + table.Name + ".json"
+		tablename := table.Name + ".json"
+		filePath := filepath.Join(db.Path, db.Name, tablename)
+		//filePath := db.Path + db.Name + "/" + table.Name + ".json"
 
 		err = os.WriteFile(filePath, tableData, 0644)
 		if err != nil {
