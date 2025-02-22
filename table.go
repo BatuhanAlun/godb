@@ -156,7 +156,6 @@ func LoadDatabaseFromFile(dbName string) (*Database, error) {
 	}
 
 	// Initialize the database
-	dbPath = "./"
 	db := &Database{
 		Name:   dbName,
 		Path:   dbPath,
@@ -171,7 +170,7 @@ func LoadDatabaseFromFile(dbName string) (*Database, error) {
 
 		// Table name is the file name without the .json extension
 		tableName := strings.TrimSuffix(file.Name(), ".json")
-		filePath := filepath.Join(dbPath, file.Name())
+		filePath := filepath.Join(dbPath, dbName, file.Name())
 
 		// Read the table data
 		data, err := os.ReadFile(filePath)
