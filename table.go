@@ -149,44 +149,58 @@ func (t *Table) Delete(findCol string, findVal interface{}) error {
 func LoadDatabaseFromFile(dbName string) (*Database, error) {
 	dbPath := dbName + "/"
 
+	// Read the directory
 	files, err := os.ReadDir(dbPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read database directory: %v", err)
 	}
 
+	// Initialize the database
 	db := &Database{
 		Name:   dbName,
 		Path:   dbPath,
 		Tables: []*Table{},
 	}
 
+	// Iterate over each file in the directory
 	for _, file := range files {
 		if !strings.HasSuffix(file.Name(), ".json") {
-			continue
+			continue // Skip non-JSON files
 		}
 
+		// Table name is the file name without the .json extension
 		tableName := strings.TrimSuffix(file.Name(), ".json")
 		filePath := filepath.Join(dbPath, file.Name())
 
+		// Read the table data
 		data, err := os.ReadFile(filePath)
 		if err != nil {
 			return nil, fmt.Errorf("failed to read table file '%s': %v", filePath, err)
 		}
 
+		// Deserialize the rows from the JSON file
 		var rows []*Row
 		if err := json.Unmarshal(data, &rows); err != nil {
 			return nil, fmt.Errorf("failed to decode JSON for table '%s': %v", tableName, err)
 		}
 
+		// Create a table and load its rows
 		table := &Table{
 			Name:    tableName,
 			DBPath:  dbPath,
 			Rows:    rows,
-			Columns: []Column{},
+			Columns: []Column{}, // Here you could also dynamically load columns from each row if necessary
 		}
 
+		// Append the table to the database
 		db.Tables = append(db.Tables, table)
+
+		// Debugging: Print to verify that tables are being added
+		fmt.Printf("Table '%s' has been added to the database.\n", table.Name)
 	}
+
+	// Debugging: Print the total number of tables loaded
+	fmt.Printf("Total Tables Loaded: %d\n", len(db.Tables))
 
 	return db, nil
 }
