@@ -129,18 +129,31 @@ func (t *Table) Delete(findCol string, findVal interface{}) error {
 	for index, v := range t.Columns {
 		if v.Name == findCol {
 			colIndex = index
+			break
 		}
 	}
 	if colIndex == -1 {
 		return fmt.Errorf("wrong column name")
 	}
 
-	newRows := t.Rows[:0]
+	fmt.Printf("Deleting rows where %s = %v\n", findCol, findVal)
+
+	var newRows []*Row
+	deletedCount := 0
+
 	for _, row := range t.Rows {
-		if row.Data[findCol] != findVal {
+
+		rowValStr := fmt.Sprintf("%v", row.Data[findCol])
+		findValStr := fmt.Sprintf("%v", findVal)
+
+		if rowValStr != findValStr {
 			newRows = append(newRows, row)
+		} else {
+			deletedCount++
 		}
 	}
+
+	fmt.Printf("Deleted %d rows from table '%s'\n", deletedCount, t.Name)
 
 	t.Rows = newRows
 	return nil
