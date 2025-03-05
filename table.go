@@ -32,6 +32,15 @@ func CreateColumn(cName, cType string, cMode ...string) Column {
 	return Column{Name: cName, Type: cType, Mode: mode}
 }
 
+func (t *Table) PkFinder() {
+	for _, v := range t.Columns {
+		if v.Mode == "PK" {
+			fmt.Println("I am PKKK")
+		}
+	}
+
+}
+
 func (t *Table) AddData(mapKey []string, mapVal []interface{}) error {
 	if len(mapKey) != len(mapVal) {
 		return fmt.Errorf("number of keys and values do not match")
